@@ -1,5 +1,6 @@
 load("classifier_dataset.mat", "testdataset", "testlabels", "traindataset", "trainlabels")
 
+%bla bla
 n = 784; %vector size for each image
 rho = 0.1; % try different values
 
