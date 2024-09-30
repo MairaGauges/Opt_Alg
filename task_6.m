@@ -1,60 +1,53 @@
 load("classifier_dataset.mat", "testdataset", "testlabels", "traindataset", "trainlabels")
 
-%bla test bhd
-
-n = 784; %vector size for each image
-rho = 0.1; % try different values
+n = size(traindataset,2);
+n_data = size(traindataset,1);
+rho = 0.1;
 
 cvx_begin 
     variable w(n,1); 
     variable w_0; 
-    w_0_matrix = repmat(w_0,400,1);
-    o = repmat(1,400,1);
-
-    minimize sum(pos(o-(trainlabels .* (traindataset*w +w_0_matrix)))) + rho*norm(w)
- 
+    w_0_matrix = repmat(w_0,n_data,1);
+    o = repmat(1,n_data,1);
+    n_squared=  pow_pos(norm(w, 2), 2);
+    minimize ((1/n_data)*sum(pos(o-(trainlabels .* (traindataset*w +w_0_matrix))))+ rho*n_squared)
 
 cvx_end
 
-
+%printing optimal values for w and w_0
 fprintf('Optimal value of w_0: %.2f\n', w_0);
+%fprintf('Optimal value of w: ');
+%fprintf('%d\n ', w);  % This prints each value of w on the same line
 
-fprintf('Optimal value of w: \n');
-disp(w)
+% %test results with testdata, vector of classifications 
+cl_test = classifier(testdataset,w,w_0);
 
+%classifier results for train dataset 
+cl_train = classifier(traindataset,w,w_0);
 
-%test results with testdata
+check = cl_test .* testlabels;
 
-cl = arrayfun(@classifier, testdataset)
+%classifier error for train dataset and test dataset
+cl_err_traindata = fD(cl_train, trainlabels);
+cl_err_testdata = fD(cl_test, testlabels);
 
+fprintf('Classifier error rate for the training data: %.3f\n', cl_err_traindata);
+fprintf('Classifier error rate for the test data: %.3f\n', cl_err_testdata);
 
-
-function cl = classifier(x)
-val = x*w + w_0
-if val < 0 
-    cl = -1
-else 
-    cl = 1
-end 
+function err = fD(C_x,y)
+val = y .* C_x;
+c = ones(size(val));
+c(val >= 0) = 0;
+err = 100*(sum(c) / size(C_x,1));
 end
 
-
-%function (1)
-function norm_ = norm(w)
-norm_ = sqrt(w'*w);
+function cl = classifier(x,w,w_0)
+val = x*w + w_0*ones(size(x,1),1);
+% start by setting all labels ro 1
+cl = ones(size(val));  % Start with all entries set to 1
+% label as -1 if below zero
+cl(val < 0) = -1;
 end
-
-%function (2)
-function err = fD(x)
-
-if x < 0
-    a = 1;
-else
-    a = 0;
-end
-end
-
-
 
 function show_im ( x )
 image ( rescale ( reshape (x ,28 ,28) ,0 ,255) ) ;
@@ -62,4 +55,3 @@ axis square equal ;
 colormap ( gray )
 end
 
-%show_im()
