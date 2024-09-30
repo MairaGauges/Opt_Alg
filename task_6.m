@@ -41,13 +41,6 @@ c(val >= 0) = 0;
 err = 100*(sum(c) / size(C_x,1));
 end
 
-function cl = classifier(x,w,w_0)
-val = x*w + w_0*ones(size(x,1),1);
-% start by setting all labels ro 1
-cl = ones(size(val));  % Start with all entries set to 1
-% label as -1 if below zero
-cl(val < 0) = -1;
-end
 
 function show_im ( x )
 image ( rescale ( reshape (x ,28 ,28) ,0 ,255) ) ;
