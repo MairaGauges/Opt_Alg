@@ -11,13 +11,16 @@ cvx_begin
     o = repmat(1,n_data,1);
     n_squared=  pow_pos(norm(w, 2), 2);
     minimize ((1/n_data)*sum(pos(o-(trainlabels .* (traindataset*w +w_0_matrix))))+ rho*n_squared)
-
 cvx_end
 
 %printing optimal values for w and w_0
 fprintf('Optimal value of w_0: %.2f\n', w_0);
 %fprintf('Optimal value of w: ');
-%fprintf('%d\n ', w);  % This prints each value of w on the same line
+%fprintf('%d\n ', w); 
+
+%save w and w_0 variables to access them outside of the file
+save('task_6_results.mat', 'w', 'w_0')
+
 
 % %test results with testdata, vector of classifications 
 cl_test = classifier(testdataset,w,w_0);
@@ -33,13 +36,6 @@ cl_err_testdata = fD(cl_test, testlabels);
 
 fprintf('Classifier error rate for the training data: %.3f\n', cl_err_traindata);
 fprintf('Classifier error rate for the test data: %.3f\n', cl_err_testdata);
-
-function err = fD(C_x,y)
-val = y .* C_x;
-c = ones(size(val));
-c(val >= 0) = 0;
-err = 100*(sum(c) / size(C_x,1));
-end
 
 
 function show_im ( x )
