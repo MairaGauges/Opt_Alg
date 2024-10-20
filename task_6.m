@@ -38,9 +38,9 @@ fprintf('Classifier error rate for the training data: %.3f\n', cl_err_traindata)
 fprintf('Classifier error rate for the test data: %.3f\n', cl_err_testdata);
 
 
-function show_im ( x )
-image ( rescale ( reshape (x ,28 ,28) ,0 ,255) ) ;
-axis square equal ;
-colormap ( gray )
-end
+% function show_im ( x )
+% image ( rescale ( reshape (x ,28 ,28) ,0 ,255) ) ;
+% axis square equal ;
+% colormap ( gray )
+% end
 
